@@ -165,9 +165,6 @@ function autoLoginFill() {
   const boardUsername = localStorage.getItem("boardUsername");
   const token = localStorage.getItem("token");
 
-  console.log("AutoLogin boardName:", boardName);
-  console.log("AutoLogin boardUsername:", boardUsername);
-
   // täytä kentät
   const boardNameInput = document.getElementById("boardName");
   const boardUsernameInput = document.getElementById("boardUsername");
@@ -261,8 +258,6 @@ refreshInterval = setInterval(() => {
 
 function loadMessage(forceScroll = false) {
 
-  console.trace("LOADMESSAGE CALL STACK");
-
   const box = document.getElementById("boardMessagesDiv");
   if (!box) return;
 
@@ -291,17 +286,12 @@ function loadMessage(forceScroll = false) {
 
     currentButtonsCache = data.quickMessages ?? [];
 
-    console.log("RENDER QUICK SELECT");
-
     updateQuickUI(data);
 
     const isAtBottom =
     box.scrollTop + box.clientHeight >= box.scrollHeight - 10;
 
-    console.log("CLEARING MESSAGE BOX");
     box.innerHTML = "";
-
-    //console.log("MESSAGES:", data.boardMessages);
 
     const todayMode = document.getElementById("todayMode")?.checked;
 
@@ -724,7 +714,7 @@ function updateQuickUI(data) {
 
 function openSettings() {
   console.log("OPEN SETTINGS TRIGGERED BY CLICK");
-  console.trace();
+  //();
 
   const boardName =
     localStorage.getItem("boardName");
@@ -1112,9 +1102,11 @@ function rejectRequest(id) {
 const menuBtn = document.getElementById("menuBtn");
 const topMenu = document.getElementById("topMenu");
 
-menuBtn.onclick = () => {
-  topMenu.classList.toggle("open");
-};
+if (menuBtn && topMenu) {
+  menuBtn.onclick = () => {
+    topMenu.classList.toggle("open");
+  };
+}
 
 document.addEventListener("click", function(e) {
 

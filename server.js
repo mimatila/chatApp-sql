@@ -1,5 +1,4 @@
 const express = require("express");
-const fs = require("fs");
 const cors = require("cors");
 const app = express();
 const crypto = require("crypto");
@@ -30,12 +29,6 @@ app.use(cors());
 
 // sitten JSON parsing
 app.use(express.json());
-
-const FILE = "boards.json";
-
-if (!fs.existsSync(FILE)) {
-  fs.writeFileSync(FILE, "{}");
-}
 
 app.post("/login", async (req, res) => {
 
@@ -151,15 +144,14 @@ const [boardResult] = await connection.query(
 const boardId = boardResult.insertId;
 
 
-// Luo settings oletusarvolla 10 päivää
-await connection.query(
-  `INSERT INTO settings
-   (board_id, autoDeleteDays)
-   VALUES (?, ?)`,
-  [boardId, 10]
-);
+    // Luo settings oletusarvolla 10 päivää
+    await connection.query(
+    `INSERT INTO settings
+    (board_id, autoDeleteDays)
+    VALUES (?, ?)`,
+    [boardId, 10]
+    );
 
-    const boardId = boardResult.insertId;
 
     // Luo owner
     await connection.query(
@@ -173,17 +165,6 @@ await connection.query(
         "owner",
         boardPassword,
         null
-      ]
-    );
-
-    // Luo asetukset
-    await connection.query(
-      `INSERT INTO settings
-      (board_id, autoDeleteDays)
-      VALUES (?, ?)`,
-      [
-        boardId,
-        10
       ]
     );
 
@@ -333,6 +314,7 @@ app.post("/boardMessage", async (req, res) => {
     }
 
     const user = rows[0];
+    const boardId = user.board_id;
 
     const [settings] = await pool.query(
   `SELECT autoDeleteDays
@@ -665,25 +647,6 @@ app.post("/quickMessages", async (req, res) => {
   }
 
 });
-
-function loadData() {
-  return JSON.parse(fs.readFileSync(FILE, "utf8"));
-}
-
-function saveData(data) {
-
-  fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
-}
-
-function cleanup(board) {
-  const days = board.autoDeleteDays ?? 10;
-  const cutoff = Date.now() - days * 86400000;
-
-  board.boardMessages =
-    board.boardMessages.filter(m =>
-      new Date(m.time).getTime() > cutoff
-    );
-}
 
 app.delete("/message/:boardName/:id", async (req, res) => {
 

@@ -11,9 +11,9 @@ CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     board_id INT,
     username VARCHAR(50),
+    password VARCHAR(255),
     email VARCHAR(100),
     role VARCHAR(20),
-    password VARCHAR(255),
     token VARCHAR(100),
 
     FOREIGN KEY (board_id)

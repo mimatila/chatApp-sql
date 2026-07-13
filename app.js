@@ -967,9 +967,9 @@ function submitCreateBoard() {
   },
     body: JSON.stringify({
       boardName,
-      boardUsername,
+      boardUsername, 
       boardPassword,
-      ownerEmail
+      ownerEmail,
     })
   })
   .then(r => r.json())

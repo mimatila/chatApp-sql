@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const app = express();
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
 const mysql = require("mysql2/promise");
 
 const pool = mysql.createPool({
@@ -58,12 +59,17 @@ app.post("/login", async (req, res) => {
 
     const user = rows[0];
 
-    if (user.password !== boardPassword) {
-      return res.status(401).json({
-        success: false,
-        message: "Invalid login"
-      });
-    }
+    const ok = await bcrypt.compare(
+  boardPassword,
+  user.password
+);
+
+if (!ok) {
+  return res.status(401).json({
+    success: false,
+    message: "Invalid login"
+  });
+}
 
     const token = crypto.randomUUID();
 
@@ -135,14 +141,12 @@ app.post("/create", async (req, res) => {
     }
 
     // Luo board
-    // Luo board
 const [boardResult] = await connection.query(
   "INSERT INTO boards (name) VALUES (?)",
   [boardName]
 );
 
 const boardId = boardResult.insertId;
-
 
     // Luo settings oletusarvolla 10 päivää
     await connection.query(
@@ -153,20 +157,22 @@ const boardId = boardResult.insertId;
     );
 
 
+    const hash = await bcrypt.hash(boardPassword, 10);
+    
     // Luo owner
     await connection.query(
-      `INSERT INTO users
-      (board_id, username, email, role, password, token)
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        boardId,
-        boardUsername,
-        boardPassword,
-        ownerEmail,
-        "owner",    
-        null
-      ]
-    );
+  `INSERT INTO users
+   (board_id, username, password, email, role, token)
+   VALUES (?, ?, ?, ?, ?, ?)`,
+  [
+    boardId,
+    boardUsername,
+    hash,
+    ownerEmail,
+    "owner",
+    null
+  ]
+);
 
     // Lisää quickMessages
     for (const msg of quickMessages) {

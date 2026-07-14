@@ -379,13 +379,19 @@ messages.forEach(msg => {
   const showTrash =
     editMode && (owner || msg.author === username);
 
-    if (showTrash) {
-      const trash = document.createElement("button");
-      trash.innerText = "🗑";
-      trash.className = "trash-btn";
-      trash.onclick = () => deleteMessage(msg.id);
-      div.appendChild(trash);
-    }
+    wrapper.appendChild(text);
+wrapper.appendChild(time);
+
+if (showTrash) {
+    const trash = document.createElement("button");
+    trash.innerText = "🗑";
+    trash.className = "trash-btn";
+    trash.onclick = () => deleteMessage(msg.id);
+
+    wrapper.appendChild(trash);   // ← tänne
+}
+
+div.appendChild(wrapper);
    
   box.appendChild(div);
   });

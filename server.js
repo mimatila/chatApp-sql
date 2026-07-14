@@ -932,20 +932,23 @@ app.post("/joinRequest", async (req, res) => {
     }
 
     // Lisää liittymispyyntö
-    await pool.query(
-      `INSERT INTO pendingRequests
-      (id, board_id, username, password, email, status, time)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [
-        crypto.randomUUID(),
-        boardId,
-        username,
-        password,
-        email,
-        "pending",
-        new Date()
-      ]
-    );
+    
+const hash = await bcrypt.hash(password, 10);
+
+await pool.query(
+  `INSERT INTO pendingRequests
+  (id, board_id, username, password, email, status, time)
+  VALUES (?, ?, ?, ?, ?, ?, ?)`,
+  [
+    crypto.randomUUID(),
+    boardId,
+    username,
+    hash,          // ← hash, ei password
+    email,
+    "pending",
+    new Date()
+  ]
+);
 
     res.json({
       success: true,
@@ -999,18 +1002,18 @@ app.post("/acceptRequest", async (req, res) => {
 
     // Lisää käyttäjä
     await connection.query(
-      `INSERT INTO users
-      (board_id, username, email, password, role, token)
-      VALUES (?, ?, ?, ?, ?, ?)`,
-      [
-        request.board_id,
-        request.username,
-        request.email,
-        request.password,
-        "member",
-        null
-      ]
-    );
+  `INSERT INTO users
+   (board_id, username, email, password, role, token)
+   VALUES (?, ?, ?, ?, ?, ?)`,
+  [
+    request.board_id,
+    request.username,
+    request.email,
+    request.password,   // tämä on jo hash
+    "member",
+    null
+  ]
+);
 
     // Poista liittymispyyntö
     await connection.query(

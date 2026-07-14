@@ -79,8 +79,8 @@ button {
   height: 8px;
   background: red;
   border-radius: 50%;
-  top: 2px;
-  right: 2px;
+  top: 4px;
+  right: 4px;
 }
 
 #menuBtn {
@@ -107,11 +107,14 @@ button {
 }
 
 .trash-btn {
+  top: 0;
+  right: 0;
   all: unset;
   cursor: pointer;
   font-size: 12px;
   margin-left: 10px;
   align-self: flex-start;
+  position: absolute;
 }
 
 .board {

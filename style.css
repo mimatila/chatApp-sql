@@ -107,14 +107,12 @@ button {
 }
 
 .trash-btn {
+  all: unset;
+  position: absolute;
   top: 0;
   right: 0;
-  all: unset;
   cursor: pointer;
   font-size: 12px;
-  margin-left: 10px;
-  align-self: flex-start;
-  position: absolute;
 }
 
 .board {

@@ -46,6 +46,10 @@
 
 <!-- viesti -->
 <div class="input-row">
+
+  <span id="quickMessagesBtn" onclick="toggleQuickMessages()">
+    💬
+  </span>
   
   <input id="boardNewMsg" placeholder="Kirjoita viesti">
   <button class="send-btn" onclick="updateMessage()">Send</button>
@@ -73,6 +77,10 @@
 
   <button onclick="showMembers()">
     Members
+  </button>
+
+   <button id="deleteUserBtn" onclick="deleteUser()">
+    Delete User
   </button>
 
   <button id="settingsBtn" onclick="openSettings()">

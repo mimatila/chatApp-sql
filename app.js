@@ -229,6 +229,16 @@ function initBoard() {
     }
   });
 
+  // Näkyvät vain memberille
+const memberButtons = ["deleteUserBtn"];
+
+memberButtons.forEach(id => {
+  const btn = document.getElementById(id);
+  if (btn && role !== "member") {
+    btn.style.display = "none";
+  }
+});
+
   console.log("INITBOARD CALLED");
 
   const boardName = getBoardName();
@@ -572,6 +582,42 @@ function deleteBoard() {
 
     if (!res.ok || !data?.success) {
       alert(data?.message || "Delete failed (no permission or server error)");
+      return;
+    }
+
+    localStorage.clear();
+    window.location.href = "index.html";
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Network error");
+  });
+}
+
+function deleteUser() {
+
+  const ok = confirm(
+    "Are you sure you want to leave this board?\n\nYour user account will be removed from this board."
+  );
+
+  if (!ok) {
+    return;
+  }
+
+  const boardName = localStorage.getItem("boardName");
+  const token = localStorage.getItem("token");
+
+  fetch(`http://localhost:3000/deleteUser/${boardName}`, {
+    method: "DELETE",
+    headers: {
+      "Authorization": token
+    }
+  })
+  .then(async (res) => {
+    const data = await res.json().catch(() => null);
+
+    if (!res.ok || !data?.success) {
+      alert(data?.message || "Delete failed");
       return;
     }
 

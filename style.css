@@ -115,6 +115,17 @@ button {
   font-size: 12px;
 }
 
+#quickMessagesBtn {
+    font-size: 24px;
+    cursor: pointer;
+    user-select: none;
+    margin-right: 8px;
+}
+
+#quickMessagesBtn:hover {
+    opacity: 0.8;
+}
+
 .board {
   border: 2px solid black;
   background-color: #eef2f7;

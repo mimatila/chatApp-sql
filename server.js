@@ -287,6 +287,56 @@ app.delete("/delete/:boardName", async (req, res) => {
 
 });
 
+app.delete("/deleteUser/:boardName", async (req, res) => {
+
+  const boardName = req.params.boardName;
+
+  const user = await authUser(req, boardName);
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      message: "Kirjaudu uudelleen"
+    });
+  }
+
+  const connection = await pool.getConnection();
+
+  try {
+
+    await connection.beginTransaction();
+
+    await connection.query(
+      "DELETE FROM users WHERE id = ?",
+      [user.id]
+    );
+
+    await connection.commit();
+
+    res.json({
+      success: true,
+      message: "User deleted"
+    });
+
+  } catch (err) {
+
+    await connection.rollback();
+
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Database error"
+    });
+
+  } finally {
+
+    connection.release();
+
+  }
+
+});
+
 app.post("/boardMessage", async (req, res) => {
 
   const {

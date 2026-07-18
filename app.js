@@ -268,6 +268,8 @@ if (leaveBtn) {
   leaveBtn.style.display = "none";
 }
 
+updateEditModeUI();
+
 if (refreshInterval) clearInterval(refreshInterval);
 
 refreshInterval = setInterval(() => {
@@ -806,6 +808,10 @@ function openSettings() {
   const boardName =
     localStorage.getItem("boardName");
 
+  /*
+  fetch("http://localhost:3000/board/" + boardName)
+  */
+
   fetch(`http://localhost:3000/board/${boardName}`)
     .then(res => res.json())
     .then(board => {
@@ -895,53 +901,9 @@ if (infoMode) {
   });
 }
 
-document.getElementById("editMode")?.addEventListener("change", (e) => {
-
-  const sendBtn = document.getElementById("sendBtn");
-  const leaveBtn = document.getElementById("leaveBoardBtn");
-  const settingsBtn = document.getElementById("settingsBtn");
-  const deleteBoardBtn = document.getElementById("deleteBoardBtn");
-  const role = localStorage.getItem("role");
-
-  if (!sendBtn) return;
-
-  if (leaveBtn) {
-    leaveBtn.style.display =
-      (role === "member" && e.target.checked)
-        ? "block"
-        : "none";
-  }
-
-  if (e.target.checked) {
-
-    sendBtn.textContent = "Save";
-    sendBtn.onclick = saveQuickMessage;
-
-  } else {
-
-    sendBtn.textContent = "Send";
-    sendBtn.onclick = updateMessage;
-
-    editingIndex = null;
-  }
-
-  if (settingsBtn) {
-  settingsBtn.style.display =
-    (role === "owner" && e.target.checked)
-      ? "block"
-      : "none";
-}
-
-if (deleteBoardBtn) {
-  deleteBoardBtn.style.display =
-    (role === "owner" && e.target.checked)
-      ? "block"
-      : "none";
-}
-
-  
-
-  loadMessage(false);
+document.getElementById("editMode")?.addEventListener("change", () => {
+    updateEditModeUI();
+    loadMessage(false);
 });
 
 const membersPopup = document.getElementById("membersPopup");
@@ -980,7 +942,6 @@ function showMembers() {
       if (!el || !popup) return;
 
       const members = board.users || [];
-
       const owners = members.filter(m => m.role === "owner");
       const others = members.filter(m => m.role !== "owner");
       const editMode = document.getElementById("editMode")?.checked;
@@ -1294,4 +1255,52 @@ function removeMember(username) {
     showMembers();
     loadMessage(false);
   });
+}
+
+/*
+document.getElementById("editMode")?.addEventListener("change", updateEditModeUI);
+*/
+
+function updateEditModeUI() {
+    const editMode = document.getElementById("editMode")?.checked;
+    const role = localStorage.getItem("role");
+    const sendBtn = document.getElementById("sendBtn");
+    const leaveBtn = document.getElementById("leaveBoardBtn");
+    const settingsBtn = document.getElementById("settingsBtn");
+    const deleteBoardBtn = document.getElementById("deleteBoardBtn");
+
+  if (!sendBtn) return;
+
+  if (leaveBtn) {
+    leaveBtn.style.display =
+  (role === "member" && editMode)
+    ? "block"
+    : "none";
+  }
+
+  if (editMode) {
+
+    sendBtn.textContent = "Save";
+    sendBtn.onclick = saveQuickMessage;
+
+} else {
+
+    sendBtn.textContent = "Send";
+    sendBtn.onclick = updateMessage;
+    editingIndex = null;
+}
+
+  if (settingsBtn) {
+  settingsBtn.style.display =
+  (role === "owner" && editMode)
+    ? "block"
+    : "none";
+}
+
+if (deleteBoardBtn) {
+  deleteBoardBtn.style.display =
+  (role === "owner" && editMode)
+    ? "block"
+    : "none";
+}
 }

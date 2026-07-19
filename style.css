@@ -9,6 +9,15 @@ body {
   margin-top: 80px;
 }
 
+.board-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.15);
+}
+
 .login-box {
   display: inline-block;
   padding: 20px;

@@ -1,52 +1,9 @@
 let loading = false;
 let refreshInterval = null;
-let currentButtonsCache = [];
+//let currentButtonsCache = [];
 
 console.log("APP.JS VERSION 123");
 console.log("APP START");
-
-function sendQuick(text) {
-  
-  const boardName = localStorage.getItem("boardName");
-  const boardUsername = localStorage.getItem("boardUsername");
-  /*const boardUsername = localStorage.getItem("boardUsername") || boardName;*/
-
-  let type="normal";
-
-  if (document.getElementById("importantMode").checked) {
-    type = "important";
-  }
-
-  if (document.getElementById("infoMode").checked) { 
-    type="info";
-  }
-
-  fetch("http://localhost:3000/boardMessage", {
-    method: "POST",
-    headers: {
-  "Content-Type": "application/json",
-  "Authorization": localStorage.getItem("token")
-},
-    body: JSON.stringify({
-    boardName,
-    boardMessage: text,
-    type
-})
-  })
-  .then(res => res.json())
-  .then(data => {
-  if (!data.success) return alert(data.message);
-
-  const input = document.getElementById("boardNewMsg");
-  if (input) input.value = "";   // 👈 TÄRKEÄ
-
-  loadMessage(true);
-
-  document.getElementById("importantMode").checked = false;
-  document.getElementById("infoMode").checked = false;
-  type="normal";
-});
-}
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -77,20 +34,17 @@ function initApp() {
 // =====================
 
 function bindUI() {
-
+  
   const msgInput = document.getElementById("boardNewMsg");
 
   if (msgInput) {
     msgInput.addEventListener("keydown", (e) => {
-
       if (e.key === "Enter") {
         e.preventDefault();
         updateMessage();
       }
-
     });
   }
- 
 
   document.addEventListener("change", (e) => {
   if (e.target?.id === "todayMode") {
@@ -98,7 +52,6 @@ function bindUI() {
   }
 });
 }
-
 
 // =====================
 // SAFE HELPERS
@@ -158,17 +111,13 @@ if (sessionStorage.getItem("skipAutoLogin")) {
       localStorage.removeItem("token");
       return;
     }
-
     window.location.href = "board.html";
   });
-
 }
-
 
 // =====================
 // BOARD INIT
 // =====================
-
 
 function initBoard() {
 
@@ -198,7 +147,6 @@ memberButtons.forEach(id => {
 });
 
   console.log("INITBOARD CALLED");
-
   const boardName = getBoardName();
 
   loadMessage(true); // heti päivitys
@@ -260,7 +208,7 @@ function loadMessage(forceScroll = false) {
     }
   }
 
-    currentButtonsCache = data.quickMessages ?? [];
+    //currentButtonsCache = data.quickMessages ?? [];
 
     updateQuickUI(data);
 
@@ -289,7 +237,6 @@ function loadMessage(forceScroll = false) {
 
 messages.forEach(msg => {
 
-  //console.log("TYPE:", msg.type);
   const div = document.createElement("div");
   div.className = "msg-row";
 
@@ -305,18 +252,18 @@ messages.forEach(msg => {
   wrapper.className = "msg-content";
 
   const text = document.createElement("div");
-text.className = "msg-text";
+  text.className = "msg-text";
 
-const author = document.createElement("span");
-author.className = "msg-author";
-author.innerText = `${msg.author}:`;
+  const author = document.createElement("span");
+  author.className = "msg-author";
+  author.innerText = `${msg.author}:`;
 
-const body = document.createElement("div");
-body.className = "msg-body";
-body.innerText = msg.text;
+  const body = document.createElement("div");
+  body.className = "msg-body";
+  body.innerText = msg.text;
 
-text.appendChild(author);
-text.appendChild(body);
+  text.appendChild(author);
+  text.appendChild(body);
 
   const time = document.createElement("div");
   time.className = "msg-time";
@@ -345,7 +292,6 @@ text.appendChild(body);
 
   div.appendChild(wrapper);
 
-
   const editMode = document.getElementById("editMode")?.checked;
   const username = localStorage.getItem("boardUsername");
 
@@ -354,20 +300,17 @@ text.appendChild(body);
 
   const showTrash =
     editMode && (owner || msg.author === username);
-    /*
-    wrapper.appendChild(text);
-    wrapper.appendChild(time);
-    */
-if (showTrash) {
+    
+  if (showTrash) {
     const trash = document.createElement("button");
     trash.innerText = "🗑";
     trash.className = "trash-btn";
     trash.onclick = () => deleteMessage(msg.id);
 
     wrapper.appendChild(trash);   // ← tänne
-}
+  }
 
-div.appendChild(wrapper);
+  div.appendChild(wrapper);
    
   box.appendChild(div);
   });
@@ -380,9 +323,7 @@ div.appendChild(wrapper);
   .finally(() => {
     loading = false;
   });
-  /*document.getElementById("boardNewMsg").blur();*/
 }
-
 
 // =====================
 // UPDATE MESSAGE
@@ -400,9 +341,8 @@ function updateMessage() {
   const boardUsername = localStorage.getItem("boardUsername") || boardName;
   let type="normal";
 
-
   if (document.getElementById("importantMode").checked) {
-  type = "important";
+    type = "important";
   }
 
   if (document.getElementById("infoMode").checked) { 
@@ -439,51 +379,6 @@ function updateMessage() {
   
 }
 
-/*
-// =====================
-// LOGIN
-// =====================
-
-function loginBoard() {
-
-  const boardName = document.getElementById("boardName").value;
-  const token = localStorage.getItem("token");
-
-  if (token) {
-
-    fetch("http://localhost:3000/authCheck", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": token
-      },
-      body: JSON.stringify({
-        boardName
-      })
-    })
-    .then(r => r.json())
-    .then(data => {
-
-      if (data.success) {
-        localStorage.setItem("boardUsername", data.username);
-        window.location.href = "board.html";
-        return;
-      }
-
-      // token ei enää kelpaa
-      localStorage.removeItem("token");
-
-      // kirjaudu salasanalla
-      loginWithPassword();
-    });
-
-    return;
-  }
-
-  // 👇 jos tokenia ei ole
-  loginWithPassword();
-}*/
-
 function loginWithPassword() {
 
   const boardName = document.getElementById("boardName").value;
@@ -499,7 +394,7 @@ function loginWithPassword() {
     boardName,
     boardUsername,
     boardPassword
-})
+  })
     })
   .then(res => res.json())
   .then(async data => {
@@ -518,7 +413,7 @@ function loginWithPassword() {
       method: "POST",
       headers: {
   "Content-Type": "application/json"
-},
+  },
       body: JSON.stringify({
         boardName,
         boardUsername
@@ -560,7 +455,7 @@ function deleteBoard() {
   });
 }
 
-function deleteUser() {
+function leaveBoard() {
 
   const ok = confirm(
     "Are you sure you want to leave this board?\n\nYour user account will be removed from this board."
@@ -573,7 +468,7 @@ function deleteUser() {
   const boardName = localStorage.getItem("boardName");
   const token = localStorage.getItem("token");
 
-  fetch(`http://localhost:3000/deleteUser/${boardName}`, {
+  fetch(`http://localhost:3000/leaveBoard/${boardName}`, {
     method: "DELETE",
     headers: {
       "Authorization": token
@@ -684,7 +579,7 @@ function renderVisitedUsers(users) {
 }
 
 function updateQuickUI(data) {
-  currentButtonsCache = data.quickMessages ?? [];
+  //currentButtonsCache = data.quickMessages ?? [];
   renderVisitedUsers(data.visitedUsers);
 }
 
@@ -833,10 +728,6 @@ function showMembers() {
       const others = members.filter(m => m.role !== "owner");
       const editMode = document.getElementById("editMode")?.checked;
       const owner = localStorage.getItem("role") === "owner";
-
-      console.log("members: ",members);
-      console.log("owner:", owner);
-console.log("editMode:", editMode);
 
       el.innerHTML =
       owners.map(m => `
@@ -1168,7 +1059,12 @@ function openQuickMessages() {
 }
 
 function closeQuickMessages() {
-    document.getElementById("quickMessagesPopup").style.display = "none";
+  document.getElementById("quickMessagesPopup").style.display = "none";
+  const edit = document.getElementById("editMode");
+
+  if (edit) {
+    edit.checked = false;
+  }
 }
 
 function renderQuickPopup(){

@@ -21,29 +21,23 @@
 <div class="board">
   <div id="boardMessagesDiv"></div>
 </div>
-
   <div class="message-options">
-
   <label>
     <input type="checkbox" id="importantMode">
     Important
   </label>
-
   <label>
     <input type="checkbox" id="infoMode">
     Info
   </label>
-
   <label>
     <input type="checkbox" id="todayMode">
     Today
   </label>
-
   <label>
     <input type="checkbox" id="editMode">
     Edit
   </label>
-
 </div>
 
 <!-- viesti -->
@@ -54,43 +48,31 @@
   </span>
 
   <div class="input-row">
-
     <input id="boardNewMsg" placeholder="Kirjoita viesti">
-
    <button id="sendBtn" class="send-btn" onclick="updateMessage()">
   Send
 </button>
-
   </div>
-
 </div>
 </div>
 <button id="menuBtn">☰</button>
-
 <div class="top-nav" id="topMenu">
-
   <button id="deleteBoardBtn" onclick="deleteBoard()">Delete Board</button>
-
   <button id="requestsBtn" onclick="openRequests()">
   Requests
 </button>
-
   <button onclick="showMembers()">
     Members
   </button>
-
-   <button id="leaveBoardBtn" onclick="deleteUser()">
+   <button id="leaveBoardBtn" onclick="leaveBoard()">
     Leave Board
   </button>
-
   <button id="settingsBtn" onclick="openSettings()">
     Settings
   </button>
-
   <button onclick="logout()">
     Logout
   </button>
-
 </div>
 
 <div id="membersPopup" class="popup">
@@ -105,74 +87,49 @@
 </div>
 
 <div id="settingsPopup" class="popup">
-
   <div class="popup-content">
-
     <h3>Asetukset</h3>
-
     <label>
       Poista viestit vanhempina kuin
     </label>
-
     <input
       id="autoDeleteDays"
       type="number"
       min="1"
       max="365"
     >
-
     <span>päivää</span>
-
     <br><br>
-
     <button onclick="saveSettings()">
       Tallenna
     </button>
-
     <button onclick="closeSettings()">
       Sulje
     </button>
-
   </div>
-
 </div>
 
 <div id="requestsPopup" class="popup">
-
   <div class="popup-content">
-
     <h3>Join Requests</h3>
-
     <div id="requestsList"></div>
-
     <br>
-
     <button onclick="closeRequests()">Sulje</button>
-
   </div>
-
 </div>
 
 <div id="quickMessagesPopup" class="popup">
-
   <div class="popup-content">
-
     <h3>Quick Messages</h3>
-
     <div id="quickMessagesList"></div>
-
     <br>
-
     <button id="saveQuickBtn" onclick="saveQuickMessages()">
   Save
 </button>
-
 <button onclick="closeQuickMessages()">
   Close
 </button>
-
   </div>
-
 </div>
 
 <script src="app.js"></script>

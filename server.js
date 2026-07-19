@@ -288,7 +288,7 @@ app.delete("/delete/:boardName", async (req, res) => {
 
 });
 
-app.delete("/deleteUser/:boardName", async (req, res) => {
+app.delete("/leaveBoard/:boardName", async (req, res) => {
 
   const boardName = req.params.boardName;
 

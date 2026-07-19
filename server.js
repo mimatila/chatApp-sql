@@ -722,6 +722,91 @@ const [result] = await pool.query(
 
 });
 
+app.post("/quickMessages/saveAll", async (req, res) => {
+
+  const { boardName, quickMessages } = req.body;
+
+  try {
+
+    const user = await authUser(req, boardName);
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Kirjaudu uudelleen"
+      });
+    }
+
+    // Hae board_id
+    const [boards] = await pool.query(
+      "SELECT id FROM boards WHERE name = ?",
+      [boardName]
+    );
+
+    if (boards.length === 0) {
+      return res.status(404).json({
+        success: false
+      });
+    }
+
+    const boardId = boards[0].id;
+
+    // Päivitä pikaviesti
+    const [rows] = await pool.query(
+  `SELECT id
+   FROM quickMessages
+   WHERE board_id = ?
+   ORDER BY id`,
+  [boardId]
+);
+
+if (!Array.isArray(quickMessages) || quickMessages.length !== 10) {
+  return res.status(400).json({
+    success: false,
+    message: "Invalid quick messages"
+  });
+}
+
+if (quickMessages.some(msg => msg.trim() === "")) {
+  return res.status(400).json({
+    success: false,
+    message: "Pikaviesti ei voi olla tyhjä"
+  });
+}
+
+for (let i = 0; i < quickMessages.length; i++) {
+
+  await pool.query(
+    `UPDATE quickMessages
+     SET message = ?
+     WHERE id = ?
+     AND board_id = ?`,
+    [
+      quickMessages[i],
+      rows[i].id,
+      boardId
+    ]
+  );
+
+}
+
+    res.json({
+      success: true
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Database error"
+    });
+
+  }
+
+});
+
 app.delete("/message/:boardName/:id", async (req, res) => {
 
   const { boardName, id } = req.params;

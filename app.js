@@ -1212,7 +1212,21 @@ document.addEventListener("click", function(e) {
     topMenu.classList.remove("open");
   }
 
+  
+
 });
+
+
+
+const quickMessagesPopup = document.getElementById("quickMessagesPopup");
+
+if (quickMessagesPopup) {
+  quickMessagesPopup.addEventListener("click", function(e) {
+    if (e.target === this) {
+      closeQuickMessages();
+    }
+  });
+}
 
 const requestsPopup = document.getElementById("requestsPopup");
 
@@ -1260,6 +1274,113 @@ function removeMember(username) {
 /*
 document.getElementById("editMode")?.addEventListener("change", updateEditModeUI);
 */
+
+function openQuickMessages() {
+    document.getElementById("quickMessagesPopup").style.display = "block";
+    renderQuickPopup();
+}
+
+function closeQuickMessages() {
+    document.getElementById("quickMessagesPopup").style.display = "none";
+}
+
+function renderQuickPopup(){
+
+  console.log("SHOW QUICK MESSAGES TRIGGERED BY CLICK");
+
+  const saveBtn = document.getElementById("saveQuickBtn");
+  const editMode = document.getElementById("editMode")?.checked;
+
+  if (saveBtn) {
+    saveBtn.style.display = editMode ? "inline-block" : "none";
+  }
+
+  const boardName = localStorage.getItem("boardName");
+
+  fetch(`http://localhost:3000/board/${boardName}`)
+    .then(res => res.json())
+    .then(board => {
+
+      const el = document.getElementById("quickMessagesList");
+      const popup = document.getElementById("quickMessagesPopup");
+
+      if (!el || !popup) return;
+
+      const quickMessages = board.quickMessages || [];
+
+      if (editMode) {
+
+  el.innerHTML =
+    quickMessages.map((msg, index) => `
+      <input class="quick-input" value="${msg}">
+    `).join("");
+
+} else {
+
+  el.innerHTML =
+    quickMessages.map((msg, index) => `
+      <div class="quick-row" onclick="sendQuickMessage('${msg}')">
+        ${msg}
+      </div>
+    `).join("");
+
+
+      }
+
+      popup.style.display = "block";
+    });
+} 
+
+function sendQuickMessage(msg) {
+    document.getElementById("boardNewMsg").value = msg;
+    updateMessage();
+    closeQuickMessages();
+}
+
+function saveQuickMessages() {
+
+  const inputs = document.querySelectorAll(".quick-input");
+
+  const quickMessages = Array.from(inputs)
+    .map(input => input.value.trim());
+
+  if (quickMessages.some(msg => msg === "")) {
+    alert("Pikaviesti ei voi olla tyhjä");
+    return;
+  }
+
+  const boardName = localStorage.getItem("boardName");
+
+  fetch("http://localhost:3000/quickMessages/saveAll", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": localStorage.getItem("token")
+    },
+    body: JSON.stringify({
+      boardName,
+      quickMessages
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+
+    if (!data.success) {
+      alert(data.message || "Tallennus epäonnistui");
+      return;
+    }
+
+    document.getElementById("editMode").checked = false;
+    closeQuickMessages();
+    loadMessage(false);
+
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Virhe tallennuksessa");
+  });
+
+}
 
 function updateEditModeUI() {
     const editMode = document.getElementById("editMode")?.checked;

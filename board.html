@@ -47,7 +47,7 @@
 <!-- viesti -->
 <div class="message-area">
 
-  <span id="quickMessagesBtn" onclick="toggleQuickMessages()">
+  <span id="quickMessagesBtn" onclick="openQuickMessages()">
     💬
   </span>
 
@@ -153,6 +153,28 @@
     <br>
 
     <button onclick="closeRequests()">Sulje</button>
+
+  </div>
+
+</div>
+
+<div id="quickMessagesPopup" class="popup">
+
+  <div class="popup-content">
+
+    <h3>Quick Messages</h3>
+
+    <div id="quickMessagesList"></div>
+
+    <br>
+
+    <button id="saveQuickBtn" onclick="saveQuickMessages()">
+  Save
+</button>
+
+<button onclick="closeQuickMessages()">
+  Close
+</button>
 
   </div>
 

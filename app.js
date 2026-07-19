@@ -1,6 +1,5 @@
 let loading = false;
 let refreshInterval = null;
-let editingIndex = null;
 let currentButtonsCache = [];
 
 console.log("APP.JS VERSION 123");
@@ -49,56 +48,11 @@ function sendQuick(text) {
 });
 }
 
-function renderQuickSelect(buttons) {
-  const select = document.getElementById("quickSelect");
-
-  select.innerHTML = "";
-
-  const empty = document.createElement("option");
-  empty.value = "";
-  empty.innerText = "Quick Messages...";
-  select.appendChild(empty);
-
-  buttons.forEach((text, index) => {
-  const opt = document.createElement("option");
-  opt.value = String(index);
-
-  opt.innerText =
-    text.length > 64
-      ? text.substring(0, 64) + "..."
-      : text;
-
-  select.appendChild(opt);
-});
-
-  select.selectedIndex = 0;
-}
-
 document.addEventListener("DOMContentLoaded", () => {
 
-  const select = document.getElementById("quickSelect");
   const el = document.getElementById("boardCount");
 
   loadBoardCount();
-
-  if (select) {
-  select.addEventListener("change", (e) => {
-
-  const index = Number(e.target.value);
-  const text = currentButtonsCache[index];
-
-  if (!text) return;
-
-  const editMode = document.getElementById("editMode").checked;
-
-  if (editMode) {
-    editingIndex = index;
-    document.getElementById("boardNewMsg").value = text;
-  } else {
-    sendQuick(text);
-  }
-  });
-  }
 
   initApp();
 });
@@ -125,24 +79,18 @@ function initApp() {
 function bindUI() {
 
   const msgInput = document.getElementById("boardNewMsg");
-  
+
   if (msgInput) {
-  msgInput.addEventListener("keydown", (e) => {
+    msgInput.addEventListener("keydown", (e) => {
 
-    if (e.key === "Enter") {
-      e.preventDefault();
-
-      const editMode = document.getElementById("editMode")?.checked;
-
-      if (editMode) {
-        saveQuickMessage();
-      } else {
+      if (e.key === "Enter") {
+        e.preventDefault();
         updateMessage();
       }
 
-    }
-  });
-}
+    });
+  }
+ 
 
   document.addEventListener("change", (e) => {
   if (e.target?.id === "todayMode") {
@@ -678,64 +626,6 @@ function logout() {
   window.location.href = "index.html";
 }
 
-function saveQuickMessage() {
-
-  console.log("SAVE QUICK CALLED", editingIndex);
-
-  if (editingIndex === null) {
-    alert("Valitse ensin Edit-moodi");
-    return;
-  }
-
-  const text =
-    document.getElementById("boardNewMsg").value.trim();
-
-  const boardName = localStorage.getItem("boardName");
-  const token = localStorage.getItem("token");
-
-  console.log("SAVE QUICK DATA", {
-  boardName,
-  index: editingIndex,
-  text
-});
-
-fetch("http://localhost:3000/quickMessages", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "Authorization": token
-  },
-  body: JSON.stringify({
-    boardName,
-    index: editingIndex,
-    text
-  })
-})
-  .then(res => res.json())
-  .then(data => {
-
-     console.log("SAVE RESPONSE", data);
-
-    if (!data.success) {
-      alert(data.message);
-      return;
-    }
-
-    document.getElementById("boardNewMsg").value = "";
-
-    editingIndex = null;
-
-    const edit = document.getElementById("editMode");
-
-    if (edit) {
-      edit.checked = false;
-      edit.dispatchEvent(new Event("change"));
-    }
-
-    loadMessage(true);
-});
-}
-
 function loadBoardCount() {
 
   const el = document.getElementById("boardCount");
@@ -795,10 +685,7 @@ function renderVisitedUsers(users) {
 
 function updateQuickUI(data) {
   currentButtonsCache = data.quickMessages ?? [];
-
   renderVisitedUsers(data.visitedUsers);
-  renderQuickSelect(currentButtonsCache);
-
 }
 
 function openSettings() {
@@ -1398,18 +1285,6 @@ function updateEditModeUI() {
     ? "block"
     : "none";
   }
-
-  if (editMode) {
-
-    sendBtn.textContent = "Save";
-    sendBtn.onclick = saveQuickMessage;
-
-} else {
-
-    sendBtn.textContent = "Send";
-    sendBtn.onclick = updateMessage;
-    editingIndex = null;
-}
 
   if (settingsBtn) {
   settingsBtn.style.display =

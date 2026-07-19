@@ -32,10 +32,6 @@ button {
   cursor: pointer;
 }
 
-.quick-row button {
-  width: 120px;
-}
-
 .board-actions {
   position: relative;
   max-width: 600px;
@@ -170,12 +166,6 @@ button {
   max-width: 500px;
   margin: 0 auto;   /* 🔥 keskittää vaakasuunnassa */
   
-}
-
-#quickSelect {
-  max-width: 370px;
-  width: 100%;
-  padding: 8px;
 }
 
 .top-nav {

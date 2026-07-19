@@ -357,18 +357,18 @@ messages.forEach(msg => {
   wrapper.className = "msg-content";
 
   const text = document.createElement("div");
-  text.className = "msg-text";
+text.className = "msg-text";
 
-  const author = document.createElement("span");
-  author.className = "msg-author";
-  author.innerText = `${msg.author}: `;
+const author = document.createElement("span");
+author.className = "msg-author";
+author.innerText = `${msg.author}:`;
 
-  const body = document.createElement("span");
-  body.className = "msg-body";
-  body.innerText = msg.text;
+const body = document.createElement("div");
+body.className = "msg-body";
+body.innerText = msg.text;
 
-  text.appendChild(author);
-  text.appendChild(body);
+text.appendChild(author);
+text.appendChild(body);
 
   const time = document.createElement("div");
   time.className = "msg-time";
@@ -406,10 +406,10 @@ messages.forEach(msg => {
 
   const showTrash =
     editMode && (owner || msg.author === username);
-
+    /*
     wrapper.appendChild(text);
-wrapper.appendChild(time);
-
+    wrapper.appendChild(time);
+    */
 if (showTrash) {
     const trash = document.createElement("button");
     trash.innerText = "🗑";

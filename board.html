@@ -22,41 +22,41 @@
   <div id="boardMessagesDiv"></div>
 </div>
   <div class="message-options">
-  <label>
-    <input type="checkbox" id="importantMode">
-    Important
-  </label>
-  <label>
-    <input type="checkbox" id="infoMode">
-    Info
-  </label>
-  <label>
-    <input type="checkbox" id="todayMode">
-    Today
-  </label>
-  <label>
-    <input type="checkbox" id="editMode">
-    Edit
-  </label>
-</div>
+    <label>
+      <input type="checkbox" id="importantMode">
+      Important
+    </label>
+    <label>
+      <input type="checkbox" id="infoMode">
+      Info
+    </label>
+    <label>
+      <input type="checkbox" id="todayMode">
+      Today
+    </label>
+    <label>
+      <input type="checkbox" id="editMode">
+      Edit
+    </label>
+  </div>
 
-<!-- viesti -->
-<div class="message-area">
+  <!-- viesti -->
+  <div class="message-area">
 
   <span id="quickMessagesBtn" onclick="openQuickMessages()">
     💬
   </span>
-
-  <div class="input-row">
-    <input id="boardNewMsg" placeholder="Kirjoita viesti">
-   <button id="sendBtn" class="send-btn" onclick="updateMessage()">
-  Send
-</button>
+    <div class="input-row">
+      <input id="boardNewMsg" placeholder="Kirjoita viesti">
+     <button id="sendBtn" class="send-btn" onclick="updateMessage()">
+      Send
+     </button>
+    </div>
   </div>
 </div>
-</div>
+
 <button id="menuBtn">☰</button>
-<div class="top-nav" id="topMenu">
+<div id="topMenu">
   <button onclick="showMembers()"> Members </button>
   <button id="requestsBtn" onclick="openRequests()"> Requests </button>
   <button id="deleteBoardBtn" onclick="deleteBoard()">Delete Board</button>
@@ -68,9 +68,7 @@
 <div id="membersPopup" class="popup">
   <div class="popup-content">
     <h3>Members:</h3>
-
     <div id="membersList"></div>
-
     <br>
     <button onclick="closeMembers()">Sulje</button>
   </div>
@@ -113,12 +111,8 @@
     <h3>Quick Messages</h3>
     <div id="quickMessagesList"></div>
     <br>
-    <button id="saveQuickBtn" onclick="saveQuickMessages()">
-  Save
-</button>
-<button onclick="closeQuickMessages()">
-  Close
-</button>
+    <button id="saveQuickBtn" onclick="saveQuickMessages()"> Save </button>
+    <button onclick="closeQuickMessages()"> Close </button>
   </div>
 </div>
 

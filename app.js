@@ -1054,7 +1054,6 @@ document.getElementById("editMode")?.addEventListener("change", updateEditModeUI
 */
 
 function openQuickMessages() {
-    document.getElementById("quickMessagesPopup").style.display = "block";
     renderQuickPopup();
 }
 
@@ -1064,6 +1063,7 @@ function closeQuickMessages() {
 
   if (edit) {
     edit.checked = false;
+    edit.dispatchEvent(new Event("change"));
   }
 }
 
@@ -1079,16 +1079,16 @@ function renderQuickPopup(){
   }
 
   const boardName = localStorage.getItem("boardName");
+  const el = document.getElementById("quickMessagesList");
+  const popup = document.getElementById("quickMessagesPopup");
+
+  if (!el || !popup) return;
+
+  el.innerHTML = "";
 
   fetch(`http://localhost:3000/board/${boardName}`)
     .then(res => res.json())
     .then(board => {
-
-      const el = document.getElementById("quickMessagesList");
-      const popup = document.getElementById("quickMessagesPopup");
-
-      if (!el || !popup) return;
-
       const quickMessages = board.quickMessages || [];
 
       if (editMode) {
@@ -1174,6 +1174,7 @@ function saveQuickMessages() {
 
    if (edit && edit.checked) {
   edit.checked = false;
+  edit.dispatchEvent(new Event("change"));
 }
 
 closeQuickMessages();

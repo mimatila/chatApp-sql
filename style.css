@@ -477,6 +477,7 @@ input::placeholder {
     justify-content: flex-start;
     background: #2b6cb0;
     color: white;
+    border: 2px solid black;
     height: 25px;
     padding: 0 10px;
     margin: 4px 0;

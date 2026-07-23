@@ -84,8 +84,6 @@ body {
   background: #eaf2ff;
 }
 
-
-
 .board-actions {
   position: relative;
   max-width: 600px;
@@ -518,4 +516,47 @@ input::placeholder {
 
 .notice-row .msg-content {
     display: flex;
+}
+
+#cp_message {
+    width: 100%;
+    min-height: 120px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+#createTopicPopup input,
+#createTopicPopup textarea {
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 10px;
+}
+
+#cp_category {
+    width: 90px;
+}
+
+#topicBtn {
+    width: 90px;
+    background-color: yellow;
+}
+
+.board-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+.topic-selects {
+    display: flex;
+    gap: 10px;
+}
+
+#categorySelect {
+    width: 80px;
+}
+
+#topicSelect {
+    width: 220px;
 }

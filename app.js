@@ -123,6 +123,16 @@ function initBoard() {
 
   const role = localStorage.getItem("role");
 
+  document.getElementById("categorySelect").value = "general";
+
+  document.getElementById("topicSelect").innerHTML =
+    '<option value="">Select Topic</option>';
+
+  currentCategory = "general";
+  currentTopic = "";
+
+  clearMessages();
+
   const ownerButtons = [
     "requestsBtn",
     "settingsBtn",
@@ -176,6 +186,20 @@ refreshInterval = setInterval(() => {
 }, 5000);
 */
 
+
+const topicSelect = document.getElementById("topicSelect");
+
+topicSelect.onchange = function () {
+
+    currentTopic = this.value;
+
+    if (currentTopic) {
+        loadMessage(true);
+    } else {
+        clearMessages();
+    }
+};
+
 if (refreshInterval) clearInterval(refreshInterval);
 
 const boardType = localStorage.getItem("boardType");
@@ -187,6 +211,14 @@ refreshInterval = setInterval(() => {
     loadMessage(false);
   }
 }, refreshTime);
+
+if (boardType === "notice") {
+    document.getElementById("noticeControls").style.display = "flex";
+    document.getElementById("topicBtn").style.display = "block";
+} else {
+    document.getElementById("noticeControls").style.display = "none";
+    document.getElementById("topicBtn").style.display = "none";
+}
 
 }
 
@@ -374,6 +406,7 @@ function updateMessage() {
   const boardName = localStorage.getItem("boardName");
   const boardUsername = localStorage.getItem("boardUsername") || boardName;
   let type="normal";
+  const boardType = localStorage.getItem("boardType");
 
   if (document.getElementById("importantMode").checked) {
     type = "important";
@@ -383,6 +416,20 @@ function updateMessage() {
     type="info";
   }
 
+let category = "";
+let topic = "";
+
+if (boardType === "notice") {
+
+    category = document.getElementById("categorySelect").value;
+    topic = document.getElementById("topicSelect").value;
+
+    if (!topic) {
+        alert("Please select a topic first");
+        return;
+    }
+}
+
   fetch("http://localhost:3000/boardMessage", {
     method: "POST",
     headers: {
@@ -391,8 +438,10 @@ function updateMessage() {
 },
     body: JSON.stringify({
     boardName,
-    boardMessage,
-    boardUsername,
+    author: boardUsername,
+    message: boardMessage,
+    category,
+    topic,
     type
 })
   })
@@ -442,6 +491,7 @@ function loginWithPassword() {
     localStorage.setItem("boardName", boardName);
     localStorage.setItem("boardUsername", boardUsername);
     localStorage.setItem("role", data.role);
+    localStorage.setItem("boardType", data.boardType);
 
     await fetch("http://localhost:3000/visit", {
       method: "POST",
@@ -592,6 +642,7 @@ function deleteMessage(id) {
   })
   .then(res => res.json())
   .then(data => {
+    document.getElementById("editMode").checked = false;
     loadMessage(true);
   });
 }
@@ -921,6 +972,136 @@ function submitCreateBoard() {
       localStorage.setItem("boardUsername", boardUsername);
     }
   });
+}
+
+function openTopicPopup() {
+  document.getElementById("createTopicPopup").style.display = "flex";
+}
+
+function closeTopicPopup() {
+    document.getElementById("createTopicPopup").style.display = "none";
+}
+
+function submitTopic() {
+
+  let type="normal";
+
+  console.log("testi type: ",type);
+
+  const boardName = localStorage.getItem("boardName");
+  const category = document.getElementById("cp_category").value;
+  const topic = document.getElementById("cp_topic").value;
+  const message = document.getElementById("cp_message").value;
+  const author = localStorage.getItem("boardUsername");
+
+   if (!topic.trim()) {
+    alert("Topic is missing");
+    return;
+}
+
+if (!message.trim()) {
+    alert("Message is missing");
+    return;
+}
+
+console.log("boardName:", boardName);
+
+  fetch("http://localhost:3000/createTopic", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+    boardName,
+    author,
+    category,
+    topic,
+    message,
+    type
+})
+  })
+  .then(r => r.json())
+  .then(data => {
+
+    alert(data.message);
+
+if (data.success) {
+
+    closeTopicPopup();
+
+    document.getElementById("categorySelect").value = category;
+
+    loadTopicsFromDatabase(category, topic);
+
+    document.getElementById("cp_category").value = "general";
+    document.getElementById("cp_topic").value = "";
+    document.getElementById("cp_message").value = "";
+}
+  });
+}
+
+function changeCategory() {
+
+    const category = document.getElementById("categorySelect").value;
+    const topicSelect = document.getElementById("topicSelect");
+
+    currentCategory = category;
+    currentTopic = "";
+
+    topicSelect.innerHTML = '<option value="">Select Topic</option>';
+
+    clearMessages();
+
+    loadTopicsFromDatabase(category);
+}
+
+function clearMessages() {
+    document.getElementById("boardMessagesDiv").innerHTML = "";
+}
+
+function loadTopicsFromDatabase(category, selectedTopic = "") {
+
+    const boardName = localStorage.getItem("boardName");
+
+    fetch("http://localhost:3000/topics", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            boardName,
+            category
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+
+        const topicSelect = document.getElementById("topicSelect");
+
+        topicSelect.innerHTML = "";
+        topicSelect.appendChild(new Option("Select Topic", ""));
+
+        data.topics.forEach(topic => {
+
+            const option = document.createElement("option");
+
+            option.value = topic;
+            option.textContent = topic;
+
+            topicSelect.appendChild(option);
+        });
+
+        // ← TÄHÄN
+        if (selectedTopic) {
+
+            topicSelect.value = selectedTopic;
+
+            currentTopic = selectedTopic;
+
+            loadMessage(true);
+        }
+
+    });
 }
 
 function openRequests() {

@@ -40,9 +40,10 @@ app.post("/login", async (req, res) => {
     // Hae käyttäjä ja board yhdellä kyselyllä
     const [rows] = await pool.query(
   `SELECT users.id,
-          users.password,
-          users.role,
-          users.username
+       users.password,
+       users.role,
+       users.username,
+       boards.boardType
    FROM users
    JOIN boards
      ON users.board_id = boards.id
@@ -83,7 +84,8 @@ if (!ok) {
   success: true,
   token,
   username: user.username,
-  role: user.role
+  role: user.role,
+  boardType: user.boardType
 });
 
   } catch (err) {
@@ -343,84 +345,91 @@ app.post("/boardMessage", async (req, res) => {
 
   const {
     boardName,
-    boardMessage,
+    author,
+    category,
+    topic,
+    message,
     type
   } = req.body;
 
-  const token = req.headers.authorization;
-
-  try {
-
-    // Hae käyttäjä tokenin perusteella
-    const [rows] = await pool.query(
-      `SELECT
-          users.username,
-          boards.id AS board_id
-       FROM users
-       JOIN boards
-         ON users.board_id = boards.id
-       WHERE boards.name = ?
-         AND users.token = ?`,
-      [boardName, token]
-    );
-
-    if (rows.length === 0) {
-      return res.status(401).json({
-        success: false,
-        message: "Kirjaudu uudelleen"
-      });
-    }
-
-    const user = rows[0];
-    const boardId = user.board_id;
-
-    const [settings] = await pool.query(
-  `SELECT autoDeleteDays
-   FROM settings
-   WHERE board_id = ?`,
-  [boardId]
-);
-
-const autoDeleteDays = settings[0].autoDeleteDays;
-
-
-// Poista vanhat viestit
-await pool.query(
-  `DELETE FROM boardMessages
-   WHERE board_id = ?
-   AND time < DATE_SUB(NOW(), INTERVAL ? DAY)`,
-  [boardId, autoDeleteDays]
-);
-
-
-// Lisää uusi viesti
-await pool.query(
-  `INSERT INTO boardMessages
-   (id, board_id, author, time, text, type)
-   VALUES (?, ?, ?, NOW(), ?, ?)`,
-  [
-    crypto.randomUUID(),
-    boardId,
-    user.username,
-    boardMessage,
+  console.log("BOARD MESSAGE DATA:", {
+    boardName,
+    author,
+    category,
+    topic,
+    message,
     type
-  ]
+  });
+
+
+ const [boards] = await pool.query(
+    "SELECT id, boardType FROM boards WHERE name = ?",
+    [boardName]
 );
-    res.json({
-      success: true,
-      message: "Viesti tallennettu"
+
+if (boards.length === 0) {
+    return res.json({
+        success: false,
+        message: "Board not found"
     });
+}
 
-  } catch (err) {
+  const boardId = boards[0].id;
+  const boardType = boards[0].boardType;
 
-    console.error(err);
+  // TÄHÄN TOPIC-TARKISTUS
 
-    res.status(500).json({
+  if (boardType === "notice") {
+
+  const [topics] = await pool.query(
+    `
+    SELECT id
+    FROM boardMessages
+    WHERE board_id = ?
+    AND category = ?
+    AND topic = ?
+    LIMIT 1
+    `,
+    [
+      boardId,
+      category,
+      topic
+    ]
+  );
+
+
+  if (topics.length === 0) {
+    return res.json({
       success: false,
-      message: "Database error"
+      message: "Topic not found"
     });
-
   }
+  }
+
+
+  // vasta nyt tallennetaan viesti
+
+  await pool.query(
+    `
+    INSERT INTO boardMessages
+    (id, board_id, author, time, text, type, category, topic)
+    VALUES (UUID(), ?, ?, NOW(), ?, ?, ?, ?)
+    `,
+    [
+      boardId,
+      author,
+      message,
+      type,
+      category,
+      topic
+    ]
+  );
+
+
+  res.json({
+    success: true,
+    message: "Message added"
+  });
 
 });
 
@@ -596,6 +605,7 @@ app.delete("/clear/:boardName", async (req, res) => {
     }
 
     const boardId = boards[0].id;
+    const boardType = boards[0].boardType;
 
     // Poista kaikki viestit
     await pool.query(
@@ -1305,6 +1315,89 @@ app.post("/removeMember", async (req, res) => {
     });
 
   }
+
+});
+
+app.post("/createTopic", async (req, res) => {
+
+  const {
+    boardName,
+    author,
+    category,
+    topic,
+    message,
+    type
+  } = req.body;
+
+  try {
+
+    // Hae board_id
+    const [boards] = await pool.query(
+      "SELECT id FROM boards WHERE name = ?",
+      [boardName]
+    );
+
+    if (boards.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Board not found"
+      });
+    }
+
+    const boardId = boards[0].id;
+
+    await pool.query(
+      `INSERT INTO boardMessages
+      (id, board_id, author, time, text, type, category, topic)
+      VALUES (UUID(), ?, ?, NOW(), ?, ?, ?, ?)`,
+      [
+        boardId,
+        author,
+        message,
+        type,
+        category,
+        topic
+      ]
+    );
+
+    res.json({
+      success: true,
+      message: "Topic created"
+    });
+
+  } catch (err) {
+
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Database error"
+    });
+
+  }
+
+});
+
+app.post("/topics", async (req,res)=>{
+
+  const { boardName, category } = req.body;
+
+  const [rows] = await pool.query(
+    `
+    SELECT DISTINCT topic
+    FROM boardMessages
+    WHERE board_id = (
+      SELECT id FROM boards WHERE name = ?
+    )
+    AND category = ?
+    AND topic IS NOT NULL
+    `,
+    [boardName, category]
+  );
+
+  res.json({
+    topics: rows.map(r => r.topic)
+  });
 
 });
 

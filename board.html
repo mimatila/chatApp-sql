@@ -14,6 +14,20 @@
 <div id="visitedUsers" class="visited-users"></div>
 
 <div class="board-actions">
+   <button id="topicBtn" onclick="openTopicPopup()"> New Topic </button>
+   <div id="noticeControls" class="topic-selects">
+     
+        <select id="categorySelect" onchange="changeCategory()">
+            <option value="general">General</option>
+            <option value="repair">Repair</option>
+            <option value="other">Other</option>
+        </select>
+
+        <select id="topicSelect">
+            <option value="">Select Topic</option>
+        </select>
+
+    </div>
   <button class="clear-btn" onclick="clearTable()">Clear</button>
 </div>
 
@@ -116,7 +130,27 @@
   </div>
 </div>
 
-<script src="app.js?v=2"></script>
+<div id="createTopicPopup" class="popup">
+  <div class="popup-content">
+    <h3>Create New Topic</h3>
+
+    <select id="cp_category">
+      <option value="general">general</option>
+      <option value="repair">repair</option>
+      <option value="other">other</option>
+    </select>
+    <input id="cp_topic" placeholder="Topic">
+    
+<textarea id="cp_message"
+          placeholder="Write your message..."
+          rows="5"></textarea>
+
+    <button onclick="submitTopic()">Create</button>
+    <button onclick="closeTopicPopup()">Cancel</button>
+  </div>
+</div>
+
+<script src="app.js?v=3"></script>
 
 </body>
 </html>

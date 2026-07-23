@@ -553,10 +553,19 @@ input::placeholder {
     gap: 10px;
 }
 
+.topic-selects {
+    display: flex;
+    gap: 10px;
+}
+
 #categorySelect {
-    width: 80px;
+    width: 100px;
+    text-align: center;
+    text-align-last: center;
 }
 
 #topicSelect {
-    width: 220px;
+    width: 250px;
+    text-align: center;
+    text-align-last: center;
 }

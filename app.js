@@ -126,7 +126,7 @@ function initBoard() {
   document.getElementById("categorySelect").value = "general";
 
   document.getElementById("topicSelect").innerHTML =
-    '<option value="">Select Topic</option>';
+    '<option value="">select topic</option>';
 
   currentCategory = "general";
   currentTopic = "";
@@ -158,8 +158,6 @@ memberButtons.forEach(id => {
 
   console.log("INITBOARD CALLED");
   const boardName = getBoardName();
-
-  //loadMessage(true); // heti päivitys
 
   const boardNameEl = document.getElementById("boardTitle");
   const box = document.getElementById("boardMessagesDiv");
@@ -1095,6 +1093,12 @@ if (data.success) {
 
     document.getElementById("categorySelect").value = category;
 
+    currentCategory = category;
+
+    console.log("Calling loadTopics");
+console.log("category:", category);
+console.log("topic:", topic);
+ console.log("submitTopic -> loadTopicsFromDatabase");
     loadTopicsFromDatabase(category, topic);
 
     document.getElementById("cp_category").value = "general";
@@ -1102,6 +1106,7 @@ if (data.success) {
     document.getElementById("cp_message").value = "";
 }
   });
+ 
 }
 
 function changeCategory() {
@@ -1112,7 +1117,7 @@ function changeCategory() {
     currentCategory = category;
     currentTopic = "";
 
-    topicSelect.innerHTML = '<option value="">Select Topic</option>';
+    topicSelect.innerHTML = '<option value="">select topic</option>';
 
     clearMessages();
 
@@ -1124,6 +1129,10 @@ function clearMessages() {
 }
 
 function loadTopicsFromDatabase(category, selectedTopic = "") {
+
+  console.log("loadTopicsFromDatabase");
+console.log("category:", category);
+console.log("selectedTopic:", selectedTopic);
 
     const boardName = localStorage.getItem("boardName");
 
@@ -1143,7 +1152,7 @@ function loadTopicsFromDatabase(category, selectedTopic = "") {
         const topicSelect = document.getElementById("topicSelect");
 
         topicSelect.innerHTML = "";
-        topicSelect.appendChild(new Option("Select Topic", ""));
+        topicSelect.appendChild(new Option("select topic", ""));
 
         data.topics.forEach(topic => {
 
@@ -1158,11 +1167,15 @@ function loadTopicsFromDatabase(category, selectedTopic = "") {
         // ← TÄHÄN
         if (selectedTopic) {
 
-            topicSelect.value = selectedTopic;
+             console.log("Selected topic:", selectedTopic);
 
-            currentTopic = selectedTopic;
+    topicSelect.value = selectedTopic;
 
-            loadMessage(true);
+    console.log("After set:", topicSelect.value);
+
+    currentTopic = selectedTopic;
+
+    loadMessage(true);
         }
 
     });
@@ -1350,7 +1363,10 @@ function removeMember(username) {
       return;
     }
 
+    document.getElementById("editMode").checked = false;
+    
     showMembers();
+    
     loadMessage(false);
   });
 }

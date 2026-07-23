@@ -314,9 +314,10 @@ if (quickBtn) {
 
 }
 
+/*
     if (boardType === "notice" && !currentTopic) {
     messages = [];
-}
+}*/
 
     if (todayMode) {
     const now = new Date();
@@ -499,83 +500,6 @@ if (boardType === "notice") {
   
 }
 
-/*
-function loadNoticeMessages(forceScroll = false) {
-
-    console.log("loadNoticeMessages()");
-
-    console.log("A");
-    const box = document.getElementById("boardMessagesDiv");
-    console.log("B");
-    if (!box) return;
-    console.log("C");
-
-    console.log("loading =", loading);
-    if (loading) return;
-    console.log("D");
-    loading = true;
-
-    const boardName = getBoardName();
-
-    console.log("Sending:", {
-    boardName,
-    category: currentCategory,
-    topic: currentTopic
-});
-
-    fetch("http://localhost:3000/loadMessages", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            boardName,
-            category: currentCategory,
-            topic: currentTopic
-        })
-    })
-    
-    .then(res => res.json())
-    .then(data => {
-
-        const isAtBottom =
-            box.scrollTop + box.clientHeight >= box.scrollHeight - 10;
-
-        box.innerHTML = "";
-
-        data.boardMessages.forEach(msg => {
-
-            const div = document.createElement("div");
-            div.className = "notice-row";
-
-            if (msg.type === "important") {
-                div.classList.add("important-msg");
-            }
-
-            if (msg.type === "info") {
-                div.classList.add("info-msg");
-            }
-
-            div.innerHTML =
-                `<b>${msg.author}</b><br>${msg.text}`;
-
-            box.appendChild(div);
-
-        });
-
-        if (forceScroll || isAtBottom) {
-            box.scrollTop = box.scrollHeight;
-        }
-
-    })
-    .catch(console.error)
-    .finally(() => {
-        loading = false;
-    });
-
-}
-    */
-
 function loginWithPassword() {
 
   const boardName = document.getElementById("boardName").value;
@@ -706,11 +630,11 @@ function clearTable() {
 
   if (boardType === "family") {
 
-  if (!confirm("Tyhjennetäänkö kaikki viestit?")) return;
+  if (!confirm("Are you sure, want to clear all messages?")) return;
 
 } else if (boardType === "notice") {
 
-  if (!confirm("Tyhjennetäänkö tämä viestiketju?")) return;
+  if (!confirm("Are you sure, clear this message chain?")) return;
 
 }
   fetch(`http://localhost:3000/clear/${boardName}`, {
@@ -763,7 +687,7 @@ function loadBoardCount() {
 }
 
 function deleteMessage(id) {
-  if (!confirm("Oletko varma että haluat poistaa viestin?")) {
+  if (!confirm("Are you sure, want to remove message?")) {
     return;
   }
 
@@ -1330,6 +1254,7 @@ function acceptRequest(id, event) {
   .then(() => {
     console.log("LOAD REQUESTS FROM THEN");
     loadRequests(); 
+    loadMessage(false);
 });
 }
 
@@ -1348,6 +1273,7 @@ function rejectRequest(id) {
   .then(() => {
     console.log("LOAD REQUESTS FROM THEN");
     loadRequests(); 
+    loadMessage(false);
 });
 }
 
@@ -1398,7 +1324,7 @@ if (requestsPopup) {
 
 function removeMember(username) {
 
-  if (!confirm(`Poistetaanko käyttäjä ${username}?`)) {
+  if (!confirm(`Remove user ${username}?`)) {
     return;
   }
 

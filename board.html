@@ -19,8 +19,9 @@
      
         <select id="categorySelect" onchange="changeCategory()">
             <option value="general">General</option>
-            <option value="repair">Repair</option>
-            <option value="other">Other</option>
+            <option value="maintenance">Maintenance</option>
+            <option value="meetings">Meetings</option>
+            <option value="events">Events</option>
         </select>
 
         <select id="topicSelect">
@@ -61,7 +62,7 @@
     💬
   </span>
     <div class="input-row">
-      <input id="boardNewMsg" placeholder="Kirjoita viesti">
+      <input id="boardNewMsg" placeholder="Write message">
      <button id="sendBtn" class="send-btn" onclick="updateMessage()">
       Send
      </button>
@@ -135,9 +136,10 @@
     <h3>Create New Topic</h3>
 
     <select id="cp_category">
-      <option value="general">general</option>
-      <option value="repair">repair</option>
-      <option value="other">other</option>
+      <option value="general">General</option>
+      <option value="maintenance">Maintenance</option>
+      <option value="meetings">Meetings</option>
+      <option value="events">Events</option>
     </select>
     <input id="cp_topic" placeholder="Topic">
     

@@ -159,7 +159,7 @@ memberButtons.forEach(id => {
   console.log("INITBOARD CALLED");
   const boardName = getBoardName();
 
-  loadMessage(true); // heti päivitys
+  //loadMessage(true); // heti päivitys
 
   const boardNameEl = document.getElementById("boardTitle");
   const box = document.getElementById("boardMessagesDiv");
@@ -204,6 +204,8 @@ if (refreshInterval) clearInterval(refreshInterval);
 
 const boardType = localStorage.getItem("boardType");
 
+loadMessage(true);
+
 const refreshTime = boardType === "notice" ? 60000 : 15000;
 
 refreshInterval = setInterval(() => {
@@ -211,6 +213,14 @@ refreshInterval = setInterval(() => {
     loadMessage(false);
   }
 }, refreshTime);
+
+if (boardType === "notice") {
+
+    clearMessages();
+
+    loadTopicsFromDatabase(currentCategory);
+
+}
 
 if (boardType === "notice") {
     document.getElementById("noticeControls").style.display = "flex";
@@ -228,6 +238,8 @@ if (boardType === "notice") {
 
 function loadMessage(forceScroll = false) {
 
+  console.log("loadMessage START");
+
   const box = document.getElementById("boardMessagesDiv");
   if (!box) return;
 
@@ -235,6 +247,9 @@ function loadMessage(forceScroll = false) {
   loading = true;
 
   const boardName = getBoardName();
+
+  const boardType = localStorage.getItem("boardType");
+
   if (!boardName) {
     loading = false;
     return;
@@ -244,10 +259,18 @@ function loadMessage(forceScroll = false) {
   .then(res => res.json())
   .then(data => {
 
+    console.log("GET /board OK");
     console.log("Board type123:", data.boardType);
+    console.log("users:", data.users);
+    console.log("visitedUsers:", data.visitedUsers);
 
   const boardType = data.boardType;
   localStorage.setItem("boardType", boardType);
+
+  if (boardType === "notice" && !currentTopic) {
+    clearMessages();
+    console.log("Notice ilman topicia");
+  }
 
   const requestButton = document.getElementById("requestsBtn");
 
@@ -270,7 +293,7 @@ if (quickBtn) {
   }
 
     //currentButtonsCache = data.quickMessages ?? [];
-
+   
     updateQuickUI(data);
 
     const isAtBottom =
@@ -281,6 +304,19 @@ if (quickBtn) {
     const todayMode = document.getElementById("todayMode")?.checked;
 
     let messages = data.boardMessages;
+
+    if (boardType === "notice") {
+
+    messages = messages.filter(msg =>
+        msg.category === currentCategory &&
+        msg.topic === currentTopic
+    );
+
+}
+
+    if (boardType === "notice" && !currentTopic) {
+    messages = [];
+}
 
     if (todayMode) {
     const now = new Date();
@@ -387,6 +423,7 @@ messages.forEach(msg => {
   })
   .catch(console.error)
   .finally(() => {
+    console.log("loadMessage END");
     loading = false;
   });
 }
@@ -461,6 +498,83 @@ if (boardType === "notice") {
   });
   
 }
+
+/*
+function loadNoticeMessages(forceScroll = false) {
+
+    console.log("loadNoticeMessages()");
+
+    console.log("A");
+    const box = document.getElementById("boardMessagesDiv");
+    console.log("B");
+    if (!box) return;
+    console.log("C");
+
+    console.log("loading =", loading);
+    if (loading) return;
+    console.log("D");
+    loading = true;
+
+    const boardName = getBoardName();
+
+    console.log("Sending:", {
+    boardName,
+    category: currentCategory,
+    topic: currentTopic
+});
+
+    fetch("http://localhost:3000/loadMessages", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            boardName,
+            category: currentCategory,
+            topic: currentTopic
+        })
+    })
+    
+    .then(res => res.json())
+    .then(data => {
+
+        const isAtBottom =
+            box.scrollTop + box.clientHeight >= box.scrollHeight - 10;
+
+        box.innerHTML = "";
+
+        data.boardMessages.forEach(msg => {
+
+            const div = document.createElement("div");
+            div.className = "notice-row";
+
+            if (msg.type === "important") {
+                div.classList.add("important-msg");
+            }
+
+            if (msg.type === "info") {
+                div.classList.add("info-msg");
+            }
+
+            div.innerHTML =
+                `<b>${msg.author}</b><br>${msg.text}`;
+
+            box.appendChild(div);
+
+        });
+
+        if (forceScroll || isAtBottom) {
+            box.scrollTop = box.scrollHeight;
+        }
+
+    })
+    .catch(console.error)
+    .finally(() => {
+        loading = false;
+    });
+
+}
+    */
 
 function loginWithPassword() {
 
@@ -581,18 +695,44 @@ function leaveBoard() {
 // =====================
 
 function clearTable() {
+
+  const boardName = localStorage.getItem("boardName");
+  const boardType = localStorage.getItem("boardType");
+
+  if (boardType === "notice" && !currentTopic) {
+    alert("Select topic first");
+    return;
+  }
+
+  if (boardType === "family") {
+
   if (!confirm("Tyhjennetäänkö kaikki viestit?")) return;
 
-  fetch(`http://localhost:3000/clear/${localStorage.getItem("boardName")}`, {
+} else if (boardType === "notice") {
+
+  if (!confirm("Tyhjennetäänkö tämä viestiketju?")) return;
+
+}
+  fetch(`http://localhost:3000/clear/${boardName}`, {
     method: "DELETE",
     headers: {
-      "Authorization": localStorage.getItem("token")
-    }
+      "Authorization": localStorage.getItem("token"),
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      category: currentCategory,
+      topic: currentTopic
+    })
   })
   .then(res => res.json())
   .then(data => {
+
     alert(data.message);
-    if (data.success) loadMessage(true);
+
+    if (data.success) {
+      loadMessage(true);
+    }
+
   });
 }
 

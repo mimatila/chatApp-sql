@@ -468,12 +468,12 @@ app.get("/board/:boardName", async (req, res) => {
 
     // Hae viestit
     const [boardMessages] = await pool.query(
-      `SELECT id, author, time, text, type
-       FROM boardMessages
-       WHERE board_id = ?
-       ORDER BY time`,
-      [boardId]
-    );
+  `SELECT id, author, time, text, type, category, topic
+   FROM boardMessages
+   WHERE board_id = ?
+   ORDER BY time`,
+  [boardId]
+);
 
     // Hae liittymispyynnöt
     const [pendingRequests] = await pool.query(
@@ -546,6 +546,72 @@ app.get("/board/:boardName", async (req, res) => {
 
 });
 
+app.post("/loadMessages", async (req, res) => {
+
+  console.log("LOAD MESSAGES:", req.body);
+
+    const {
+        boardName,
+        category,
+        topic
+    } = req.body;
+
+    try {
+
+        // hae board_id
+        const [boards] = await pool.query(
+            "SELECT id FROM boards WHERE name = ?",
+            [boardName]
+        );
+
+        if (boards.length === 0) {
+            return res.json({
+                success: false,
+                message: "Board not found"
+            });
+        }
+
+        const boardId = boards[0].id;
+
+        // hae vain tämän topicin viestit
+        const [boardMessages] = await pool.query(
+            `
+            SELECT id,
+                   author,
+                   time,
+                   text,
+                   type
+            FROM boardMessages
+            WHERE board_id = ?
+              AND category = ?
+              AND topic = ?
+            ORDER BY time
+            `,
+            [
+                boardId,
+                category,
+                topic
+            ]
+        );
+
+        res.json({
+            success: true,
+            boardMessages
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        res.status(500).json({
+            success: false,
+            message: "Database error"
+        });
+
+    }
+
+});
+
 app.get("/boards", async (req, res) => {
 
   try {
@@ -593,7 +659,7 @@ app.delete("/clear/:boardName", async (req, res) => {
 
     // Hae board_id
     const [boards] = await pool.query(
-      "SELECT id FROM boards WHERE name = ?",
+      "SELECT id, boardType FROM boards WHERE name = ?",
       [boardName]
     );
 
@@ -608,10 +674,30 @@ app.delete("/clear/:boardName", async (req, res) => {
     const boardType = boards[0].boardType;
 
     // Poista kaikki viestit
-    await pool.query(
-      "DELETE FROM boardMessages WHERE board_id = ?",
-      [boardId]
-    );
+    const { category, topic } = req.body;
+
+if (boardType === "notice") {
+
+  await pool.query(
+    `DELETE FROM boardMessages
+     WHERE board_id = ?
+     AND category = ?
+     AND topic = ?`,
+    [
+      boardId,
+      category,
+      topic
+    ]
+  );
+
+} else {
+
+  await pool.query(
+    "DELETE FROM boardMessages WHERE board_id = ?",
+    [boardId]
+  );
+
+}
 
     res.json({
       success: true,

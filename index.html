@@ -8,8 +8,8 @@
 
 <div class="top-nav">
 
-  <button onclick="openJoinBoard()">Join Board</button>
-  <button onclick="openCreatePopup()">Create Board</button>
+  <button id="openJoinBtn" onclick="openJoinBoard()">Join Board</button>
+  <button id="openCreateBtn" onclick="openCreatePopup()">Create Board</button>
 </div>
 
 <div id="boardCount">Boards: ...</div>
@@ -21,7 +21,7 @@
     <input id="boardName" placeholder="Board Name">
     <input id="boardUsername" placeholder="Username">
     <input id="boardPassword" type="password" placeholder="Password">
-    <button type="submit">Open Board</button>
+    <button id="openBoardBtn" type="submit">Open Board</button>
   </form>
 </div>
 

@@ -28,12 +28,40 @@ body {
 }
 
 .board-container {
+    position: relative;
     max-width: 700px;
     margin: 40px auto;
     padding: 20px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,.15);
+}
+
+.language-select {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+
+    display: flex;
+    gap: 8px;
+}
+
+.lang-flag {
+    width: 28px;
+    height: 20px;
+    cursor: pointer;
+    border: 1px solid #888;
+    border-radius: 3px;
+}
+
+.lang-flag:hover {
+    transform: scale(1.1);
+}
+
+.lang-flag.active {
+  
+    border: 2px solid #0078d7;
+    box-shadow: 0 0 4px #0078d7;
 }
 
 .board {
@@ -134,6 +162,20 @@ button {
   cursor: pointer;
 }
 
+#openJoinBtn {
+  width: 120px;
+  background-color: yellow;
+}
+
+#openCreateBtn {
+  width: 120px;
+  background-color: yellow;
+}
+
+#openBoardBtn {
+  background-color: yellow;
+}
+
 #requestsBtn {
   position: relative;
 }
@@ -172,7 +214,7 @@ button {
 }
 
 .send-btn {
-  background-color: green;
+  background-color: #d9ecff;
 }
 
 .input-row button,
@@ -537,6 +579,7 @@ input::placeholder {
     padding: 8px;
     font-size: 14px;
     margin-bottom: 8px;
+    font-weight: bold;
 }
 
 #cp_message {
@@ -586,6 +629,7 @@ input::placeholder {
     text-align-last: center;
     height: 34px;
     padding-left: 0;
+    background-color: #d9ecff;
 }
 
 #topicSelect {
@@ -594,4 +638,5 @@ input::placeholder {
     text-align-last: center;
     height: 34px;
     padding-left: 0;
+    background-color: #d9ecff;
 }

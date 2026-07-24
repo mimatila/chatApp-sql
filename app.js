@@ -131,6 +131,18 @@ function initBoard() {
   currentCategory = "general";
   currentTopic = "";
 
+  initLanguage();
+
+  document.getElementById("langFi").onclick = () => {
+    localStorage.setItem("language", "fi");
+    initLanguage();
+  };
+
+  document.getElementById("langEn").onclick = () => {
+    localStorage.setItem("language", "en");
+    initLanguage();
+  };
+
   clearMessages();
 
   const ownerButtons = [
@@ -184,6 +196,18 @@ refreshInterval = setInterval(() => {
 }, 5000);
 */
 
+/*
+initLanguage();
+
+langFi.onclick = () => {
+    localStorage.setItem("language", "fi");
+    loadLanguage();
+};
+
+langEn.onclick = () => {
+    localStorage.setItem("language", "en");
+    loadLanguage();
+};*/
 
 const topicSelect = document.getElementById("topicSelect");
 
@@ -232,6 +256,46 @@ if (boardType === "notice") {
     document.getElementById("topicBtn").style.display = "none";
 }
 
+}
+
+function initLanguage() {
+
+    const lang = localStorage.getItem("language") || "fi";
+
+    document.getElementById("langFi").classList.remove("active");
+    document.getElementById("langEn").classList.remove("active");
+
+    if (lang === "fi") {
+        document.getElementById("langFi").classList.add("active");
+    } else {
+        document.getElementById("langEn").classList.add("active");
+    }
+
+    loadLanguage(lang);
+
+}
+
+function loadLanguage(lang) {
+
+    if (lang === "fi") {
+
+        document.getElementById("topicBtn").textContent = "Uusi aihe";
+        document.getElementById("settingsBtn").textContent = "Asetukset";
+        topicBtn.textContent = "Uusi aihe";
+        settingsBtn.textContent = "Asetukset";
+        deleteBoardBtn.textContent = "Poista taulu";
+        requestsBtn.textContent = "Pyynnöt";
+
+    } else {
+
+        document.getElementById("topicBtn").textContent = "New Topic";
+        document.getElementById("settingsBtn").textContent = "Settings";
+        topicBtn.textContent = "New Topic";
+        settingsBtn.textContent = "Settings";
+        deleteBoardBtn.textContent = "Delete Board";
+        requestsBtn.textContent = "Requests";
+
+    }
 
 }
 
@@ -1571,15 +1635,28 @@ function loadTopicCounts() {
     .then(r => r.json())
     .then(data => {
 
-        if (!data.success) return;
+    if (!data.success) return;
 
-        let text = "Summary: ";
+    const order = [
+        "general",
+        "maintenance",
+        "meetings",
+        "events"
+    ];
 
-        data.counts.forEach(c => {
+    let text = "Topics: ";
+
+    order.forEach(category => {
+
+        const c = data.counts.find(item => item.category === category);
+
+        if (c) {
             text += `${c.category} (${c.count})  `;
-        });
-
-        document.getElementById("topicSummary").textContent = text;
+        }
 
     });
+
+    document.getElementById("topicSummary").textContent = text;
+
+});
 }

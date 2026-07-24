@@ -24,6 +24,7 @@ body {
   background: white;
   z-index: 1000;
   padding: 10px;
+  text-decoration: underline;
 }
 
 .board-container {
@@ -144,6 +145,7 @@ button {
 
 .clear-btn {
   position: static;
+  height:34px;
   margin-left: auto;
   grid-column: 3;
   justify-self: end;
@@ -510,12 +512,31 @@ input::placeholder {
 }
 
 .notice-row {
-    padding: 8px;
+    padding: 4px 8px;
     border-bottom: 1px solid #ddd;
+    background: #fff9d6;
 }
 
 .notice-row .msg-content {
     display: flex;
+}
+
+.notice-row.important-msg {
+    background: #ffd9d9;
+    border-bottom: 1px solid #ddd;
+    padding: 4px 8px;
+}
+
+.notice-row.info-msg {
+    background: #d9ecff;
+    border-bottom: 1px solid #ddd;
+    padding: 4px 8px;
+}
+
+.topic-summary {
+    padding: 8px;
+    font-size: 14px;
+    margin-bottom: 8px;
 }
 
 #cp_message {
@@ -538,6 +559,7 @@ input::placeholder {
 
 #topicBtn {
     width: 90px;
+    height:34px;
     background-color: yellow;
 }
 
@@ -559,13 +581,17 @@ input::placeholder {
 }
 
 #categorySelect {
-    width: 100px;
+    width: 120px;
     text-align: center;
     text-align-last: center;
+    height: 34px;
+    padding-left: 0;
 }
 
 #topicSelect {
-    width: 250px;
+    width: 270px;
     text-align: center;
     text-align-last: center;
+    height: 34px;
+    padding-left: 0;
 }

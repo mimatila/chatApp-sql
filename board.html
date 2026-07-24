@@ -13,6 +13,8 @@
 <!-- 🟢 viimeksi paikalla -->
 <div id="visitedUsers" class="visited-users"></div>
 
+<div id="topicSummary" class="topic-summary"></div>
+
 <div class="board-actions">
    <button id="topicBtn" onclick="openTopicPopup()"> New Topic </button>
    <div id="noticeControls" class="topic-selects">
@@ -141,7 +143,7 @@
       <option value="meetings">meetings</option>
       <option value="events">events</option>
     </select>
-    <input id="cp_topic" placeholder="Topic">
+    <input id="cp_topic" placeholder="Topic" maxlength="40">
     
 <textarea id="cp_message"
           placeholder="Write your message..."

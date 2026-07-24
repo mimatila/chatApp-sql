@@ -1415,6 +1415,13 @@ app.post("/createTopic", async (req, res) => {
     type
   } = req.body;
 
+  if (topic.length > 40) {
+    return res.json({
+        success: false,
+        message: "Topic too long"
+    });
+}
+
   try {
 
     // Hae board_id
@@ -1485,6 +1492,38 @@ app.post("/topics", async (req,res)=>{
     topics: rows.map(r => r.topic)
   });
 
+});
+
+app.post("/topicCounts", async (req, res) => {
+
+    const { boardName } = req.body;
+
+    const sql = `
+        SELECT category, COUNT(DISTINCT topic) AS count
+        FROM boardMessages
+        WHERE board_id = (
+            SELECT id FROM boards WHERE name = ?
+        )
+        GROUP BY category
+    `;
+
+    try {
+
+        const [result] = await pool.query(sql, [boardName]);
+
+        res.json({
+            success: true,
+            counts: result
+        });
+
+    } catch (err) {
+
+        console.log(err);
+
+        res.json({
+            success: false
+        });
+    }
 });
 
 app.listen(3000, () => {

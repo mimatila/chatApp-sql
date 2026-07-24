@@ -202,8 +202,6 @@ if (refreshInterval) clearInterval(refreshInterval);
 
 const boardType = localStorage.getItem("boardType");
 
-loadMessage(true);
-
 const refreshTime = boardType === "notice" ? 60000 : 15000;
 
 refreshInterval = setInterval(() => {
@@ -212,13 +210,19 @@ refreshInterval = setInterval(() => {
   }
 }, refreshTime);
 
+
+const topicSummary = document.getElementById("topicSummary");
+
 if (boardType === "notice") {
-
+    //topicSummary.style.display = "block";
+    loadTopicCounts();
     clearMessages();
-
     loadTopicsFromDatabase(currentCategory);
-
+}else {
+    topicSummary.style.display = "none";
 }
+
+loadMessage(true);
 
 if (boardType === "notice") {
     document.getElementById("noticeControls").style.display = "flex";
@@ -227,6 +231,7 @@ if (boardType === "notice") {
     document.getElementById("noticeControls").style.display = "none";
     document.getElementById("topicBtn").style.display = "none";
 }
+
 
 }
 
@@ -1056,6 +1061,11 @@ function submitTopic() {
   const message = document.getElementById("cp_message").value;
   const author = localStorage.getItem("boardUsername");
 
+  if (topic.length > 40) {
+    alert("Topic can contain a maximum of 50 characters.");
+    return;
+}
+
    if (!topic.trim()) {
     alert("Topic is missing");
     return;
@@ -1090,6 +1100,9 @@ console.log("boardName:", boardName);
 if (data.success) {
 
     closeTopicPopup();
+    if (data.boardType === "notice") {
+    loadTopicCounts();
+}
 
     document.getElementById("categorySelect").value = category;
 
@@ -1540,4 +1553,33 @@ if (deleteBoardBtn) {
     ? "block"
     : "none";
 }
+}
+
+function loadTopicCounts() {
+
+    const boardName = localStorage.getItem("boardName");
+
+    fetch("http://localhost:3000/topicCounts", {
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            boardName
+        })
+    })
+    .then(r => r.json())
+    .then(data => {
+
+        if (!data.success) return;
+
+        let text = "Summary: ";
+
+        data.counts.forEach(c => {
+            text += `${c.category} (${c.count})  `;
+        });
+
+        document.getElementById("topicSummary").textContent = text;
+
+    });
 }

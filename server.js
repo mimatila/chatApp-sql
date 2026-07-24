@@ -51,6 +51,8 @@ app.post("/login", async (req, res) => {
      AND BINARY users.username = BINARY ?`,
   [boardName, boardUsername]
 );
+     
+    /*ei käsitelty messagea frontendissä, ei tarvia käännöstä*/
 
     if (rows.length === 0) {
       return res.status(404).json({

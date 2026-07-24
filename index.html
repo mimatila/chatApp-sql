@@ -30,10 +30,23 @@
     <h3>Create Board</h3>
 
     <label for="cp_boardType">Board Type</label>
-    <select id="cp_boardType">
+    <select id="cp_boardType" onchange="changeCreateBoardType()">
       <option value="family">Family</option>
       <option value="notice">Notice</option>
     </select>
+
+    <div id="noticeTemplateDiv" style="display:none;">
+
+    <label for="cp_noticeTemplate">Notice Template</label>
+
+    <select id="cp_noticeTemplate">
+        <option value="taloyhtio">Taloyhtiö</option>
+        <option value="urheiluseura">Urheiluseura</option>
+        <option value="koulu">Koulu</option>
+        <option value="yhdistys">Yhdistys</option>
+    </select>
+
+</div>
 
     <input id="cp_boardName" placeholder="Board Name">
     <input id="cp_username" placeholder="Username">

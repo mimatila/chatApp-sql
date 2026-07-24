@@ -5,6 +5,42 @@ let refreshInterval = null;
 console.log("APP.JS VERSION 123");
 console.log("APP START");
 
+const categories = [
+    "general",
+    "maintenance",
+    "meetings",
+    "events",
+    "Sports"
+];
+
+const categories_taloyhtio = [
+    "general",
+    "maintenance",
+    "meetings",
+    "events"
+];
+
+const categories_urheiluseura = [
+    "general",
+    "training",
+    "matches",
+    "events"
+];
+
+const categories_koulu = [
+    "general",
+    "homework",
+    "meetings",
+    "trips"
+];
+
+const categories_yhdistys = [
+    "general",
+    "meetings",
+    "events",
+    "announcements"
+];
+
 document.addEventListener("DOMContentLoaded", () => {
 
   const el = document.getElementById("boardCount");
@@ -123,6 +159,8 @@ function initBoard() {
 
   const role = localStorage.getItem("role");
 
+  loadCategories();
+
   document.getElementById("categorySelect").value = "general";
 
   document.getElementById("topicSelect").innerHTML =
@@ -170,7 +208,6 @@ memberButtons.forEach(id => {
 
   console.log("INITBOARD CALLED");
   const boardName = getBoardName();
-
   const boardNameEl = document.getElementById("boardTitle");
   const box = document.getElementById("boardMessagesDiv");
 
@@ -225,6 +262,34 @@ topicSelect.onchange = function () {
 if (refreshInterval) clearInterval(refreshInterval);
 
 const boardType = localStorage.getItem("boardType");
+/*
+let categories;
+
+if (boardType === "notice") {
+
+    switch (noticeTemplate) {
+
+        case "taloyhtio":
+            categories = categories_taloyhtio;
+            break;
+
+        case "urheiluseura":
+            categories = categories_urheiluseura;
+            break;
+        case "koulu":
+            categories = categories_urheiluseura;
+            break;
+        case "yhdistys":
+            categories = categories_urheiluseura;
+            break;
+
+    }
+
+} else {
+
+    categories = categories_family;
+
+}*/
 
 const refreshTime = boardType === "notice" ? 60000 : 15000;
 
@@ -273,6 +338,35 @@ function initLanguage() {
 
     loadLanguage(lang);
 
+}
+
+function loadCategories() {
+
+    const selects = [
+        "categorySelect",
+        "cp_category"
+    ];
+
+    selects.forEach(id => {
+
+        const select = document.getElementById(id);
+
+        if (!select) return;
+
+        select.innerHTML = "";
+
+        categories.forEach(category => {
+
+            const option = document.createElement("option");
+
+            option.value = category;
+            option.textContent = category;
+
+            select.appendChild(option);
+
+        });
+
+    });
 }
 
 function loadLanguage(lang) {
@@ -1054,7 +1148,11 @@ function sendJoinRequest() {
 }
 
 function openCreatePopup() {
-  document.getElementById("createPopup").style.display = "flex";
+
+    document.getElementById("cp_boardType").value = "family";
+    document.getElementById("noticeTemplateDiv").style.display = "none";
+    document.getElementById("createPopup").style.display = "block";
+
 }
 
 function closeCreatePopup() {
@@ -1068,6 +1166,12 @@ function submitCreateBoard() {
   const boardUsername = document.getElementById("cp_username").value;
   const ownerEmail = document.getElementById("cp_email").value;
   const boardPassword = document.getElementById("cp_boardPassword").value;
+
+  let noticeTemplate = "";
+
+  if (boardType === "notice") {
+    noticeTemplate = document.getElementById("cp_noticeTemplate").value;
+  }
 
   console.log("boardType: ",boardType);
 
@@ -1659,4 +1763,12 @@ function loadTopicCounts() {
     document.getElementById("topicSummary").textContent = text;
 
 });
+}
+
+function changeCreateBoardType() {
+
+    const boardType = document.getElementById("cp_boardType").value;
+
+    document.getElementById("noticeTemplateDiv").style.display =
+        boardType === "notice" ? "block" : "none";
 }
